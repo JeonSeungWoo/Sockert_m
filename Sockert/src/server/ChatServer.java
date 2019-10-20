@@ -16,20 +16,20 @@ import javax.swing.JTextArea;
 @SuppressWarnings("serial")
 public class ChatServer extends JFrame {
 
-    JTextArea ta;
-    JScrollPane pane;
-    ServerSocket ss;
-    Socket s;
+    JTextArea jta;
+    JScrollPane jpane;
+    ServerSocket sScoket;
+    Socket socket;
     ArrayList<ChatThread> list;
    
     public ChatServer(){
         super("채팅 서버");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
        
-        ta = new JTextArea();
-        pane = new JScrollPane(ta);
-        add(pane);
-        ta.setText("채팅 서버 시작됨!");
+        jta = new JTextArea();
+        jpane = new JScrollPane(jta);
+        add(jpane);
+        jta.setText("채팅 서버 시작됨!");
        
         setSize(400, 300);
         setVisible(true);
@@ -37,10 +37,10 @@ public class ChatServer extends JFrame {
         //네트워크 코드
         try{
             list = new ArrayList<ChatThread>();
-            ss = new ServerSocket(9999);
+            sScoket = new ServerSocket(9999);
             while(true){
                
-                s = ss.accept(); //접속되어온소켓을 소켓참조변수 s에 담는다.
+            	socket = sScoket.accept(); //접속되어온소켓을 소켓참조변수 s에 담는다.
                 ChatThread t = new ChatThread();
                 list.add(t); //멀티 쓰레드를 위해
                 t.start();
@@ -61,11 +61,11 @@ public class ChatServer extends JFrame {
         public ChatThread(){
             try{
                 //입력
-                InputStream is = s.getInputStream();
+                InputStream is = socket.getInputStream();
                 br = new BufferedReader(new InputStreamReader(is));
                
                 //출력
-                OutputStream os = s.getOutputStream();
+                OutputStream os = socket.getOutputStream();
                 pw = new PrintWriter(os,true);
                                
             }catch(Exception e){
@@ -85,7 +85,7 @@ public class ChatServer extends JFrame {
                 while(true){
                     String str = br.readLine(); //채팅 내용을 받아서 브로드캐스팅
                     broadcast("["+nickName+"] "+str); //[홍길동] 안녕
-                    ta.append("[" +nickName+"]"+str+"\n");
+                    jta.append("[" +nickName+"]"+str+"\n");
                 }//while
             } catch (Exception e) {
                 e.printStackTrace();

@@ -18,25 +18,25 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 public class ChatClient extends JFrame implements Runnable, ActionListener{
 
-    JTextArea ta;
-    JScrollPane pane;
-    JTextField tf;
-    Socket s;
-    BufferedReader br;
-    PrintWriter pw;
-   
+    JTextArea jta;
+    JScrollPane jpane;
+    JTextField jtf;
+    Socket socket;
+    BufferedReader bufReader;
+    PrintWriter printWriter;
+
     public ChatClient(){
-        setTitle("채팅 클라이언트 v1.0.1");
+        setTitle("채팅 클라이언트");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE); //현재창만 닫기
        
-        ta = new JTextArea();
-        ta.setEditable(false);
-        pane = new JScrollPane(ta);
-        add(pane);
-        tf = new JTextField();
-        add(tf, BorderLayout.SOUTH);
+        jta = new JTextArea();
+        jta.setEditable(false);
+        jpane = new JScrollPane(jta);
+        add(jpane);
+        jtf = new JTextField();
+        add(jtf, BorderLayout.SOUTH);
        
-        tf.addActionListener(this); //엔터치면 이벤트 발생
+        jtf.addActionListener(this); //엔터치면 이벤트 발생
        
         setSize(400,300);
         setVisible(true);
@@ -44,15 +44,15 @@ public class ChatClient extends JFrame implements Runnable, ActionListener{
        
         //네트워크 코드
         try {
-            s = new Socket("localhost",9999);
+        	socket = new Socket("localhost",9999);
             //입력
-            InputStream is = s.getInputStream();
+            InputStream is = socket.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
-            br = new BufferedReader(isr);
+            bufReader = new BufferedReader(isr);
            
             //출력
-            OutputStream os = s.getOutputStream();
-            pw = new PrintWriter(os, true);
+            OutputStream os = socket.getOutputStream();
+            printWriter = new PrintWriter(os, true);
            
         } catch (Exception e) {
            
@@ -63,22 +63,22 @@ public class ChatClient extends JFrame implements Runnable, ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent e) { //엔터 또는 버튼 클릭했을경우
-        String chat = tf.getText(); //tf로 부터 채팅 내용을 가져온다.
-        pw.println(chat); //채팅내용 서버로 전송
-        tf.setText(""); //tf를 지운다.
+        String chat = jtf.getText(); //tf로 부터 채팅 내용을 가져온다.
+        printWriter.println(chat); //채팅내용 서버로 전송
+        jtf.setText(""); //tf를 지운다.
  
     }
  
     @Override
     public void run() {
         try {
-            String str = br.readLine();
-            ta.append(str+"\n"); //"닉네임을 입력하세요!" 출력
+            String str = bufReader.readLine();
+            jta.append(str+"\n"); //"닉네임을 입력하세요!" 출력
             while(true){
-                str= br.readLine(); //채팅 내용
-                ta.append(str+"\n");
+                str= bufReader.readLine(); //채팅 내용
+                jta.append(str+"\n");
                 //스크롤 맨 밑으로
-                ta.setCaretPosition(ta.getText().length());
+                jta.setCaretPosition(jta.getText().length());
             }
         } catch (Exception e) {
            
